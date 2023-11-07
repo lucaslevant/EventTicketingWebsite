@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<style>
+.task-bar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-color: #35367b;
+			color: white;
+			height: 50px;
+			padding: 0 20px;
+			gap: 10px; /* added gap property to decrease space */
+			z-index: 1;
+		}
+
+		.menu {
+			font-weight: bold;
+			margin-right: auto;
+		}
+
+		.loginLink {
+			font-weight: bold;
+			margin-left: auto;
+			gap: 50px
+		}
+		.forms {
+			margin: auto;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			text-align: center;
+			padding: 0px;
+			position: absolute;
+			width: 50%;
+			left: 25%;
+			top: 0px;
+			z-index: 0;	
+		}
+		label {
+		  display: inline-block;
+		  width: 150px;
+		  text-align: left;
+		}
+		input[type="text"], input[type="password"], textarea {
+		  border-radius: 5px;
+		  width: 75%;
+		  height: 20px;
+		  text-align: left;
+		}
+		input[type="email"]{
+		  border-radius: 5px;
+		  width: 75%;
+		  height: 20px;
+		  
+		}
+		input[type="submit"] {
+		  border-radius: 5px;
+		  background-color: #961d0e;
+		  width: 75%;
+		  color: white;
+		}
+	</style>
+<body>
+	<div class="task-bar" id = "task-bar">
+			<div class="menu">SalTickets</div>
+			<div class="loginLink">
+					<a style = "color: white" href="http://localhost:8081/practice/index.html">Home</a>
+					<a style = "color: white" href="http://localhost:8081/practice/login.html">Login/Sign Up</a>
+			</div>
+	</div>
+	<div class = "forms">
+			<form action = "LoginServlet" method = 'GET'>
+					<label><b>Login</b></label><br><br>
+					<label for="username" style="text-align:left;">Username:</label>
+					<input type="text" id="username" name="username" required><br><br>
+					<label for="password">Password:</label>
+					<input type="password" id="password" name="password" required><br><br>
+					<input type="submit" value="Submit Query">
+			</form>
+			<form action = "RegisterServlet" method = 'GET'>
+					<br><br><br><br><br><br>
+					<label><b>Sign Up</b></label><br><br>
+					<label for="email">Email:</label>
+					<input type="email" name="email" required><br><br>
+					<label for="name">Username:</label>
+					<input type="text" name="NewUsername" required><br><br>
+					<label for="password">Password:</label>
+					<input type="password" name="NewPassword" required><br><br>
+					<label for="Confirm Password">Confirm Password:</label>
+					<input type="password" name="ConfirmPassword" required><br><br>
+					<input type="submit" value="Submit Query">
+			</form>
+		</div>
+		

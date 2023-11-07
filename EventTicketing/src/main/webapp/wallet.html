@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<style>
+  .container {
+    position: absolute;
+    right: 0;
+    left: 0;
+    margin: auto;
+    width: 50%;
+    height: 27%;
+    text-align: left;
+    border: 1px solid #D3D3D3;
+  }
+   table {
+    border-collapse: collapse;
+    width: 350px;
+    height: 100px;
+    border: 2px solid black;
+    right: 0;
+    left: 0;
+    margin: auto;
+  }
+  th, td {
+    border: 1px solid black;
+    padding: 10px;
+  }
+  .form {
+    position: absolute;
+    right: 0;
+    left: 0;
+    margin: auto;
+    text-align: center;
+    background-color: #D3D3D3;
+    padding: 15px;
+  }
+  .task-bar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-color: #35367b;
+			color: white;
+			height: 50px;
+			padding: 0 20px;
+			gap: 10px; /* added gap property to decrease space */
+			z-index: 1;
+		}
+		
+	.menu {
+    position: absolute;
+    right: 0;
+    left: 0;
+    margin: auto;
+    width: 50%;
+    height: 27%;
+    text-align: left;
+  }
+	
+
+</style>
+
+<body>
+<div class="task-bar">
+  <div>SalTickets</div>
+  <div class="loginLink">
+    <a style="color: white" href="http://localhost:8081/practice/index.html">Home</a>
+    <a style="color: white" href="http://localhost:8081/practice/favorite.html" id="loginText">Login/Sign Up</a>
+    <a style="color: white" href="http://localhost:8081/practice/wallet.html" id="walletText">Wallet</a>
+	<a style = "color: white" href="http://localhost:8081/practice/index.html" id = "logoutText" onclick="deleteAllUsernameCookies()"></a>			
+  </div>
+</div>
+<div style="font-size: 24px;"class="menu" ><b>My Wallet</b></div><br><br>
+<div id = "cashBalance" class="menu"  ></div><br><br>
+<div id = "totalValue"class="menu" ></div><br><br>
+<div class="container" style = "display: none">
+  <h2 style = "background-color: #D3D3D3;font-size:20px; margin-top: -10px;" id = "Title" >Title</h2>
+  <table>
+    <tr>
+       <td id = "Number" style = "Display: none;">0</td>
+      <td id = "Quantity">Quantity:</td>
+      <td id = "QuantityAmount"></td>
+      <td id = "Change">Change:</td>
+      <td id = "ChangeAmount"></td>
+    </tr>
+    <tr>
+      <td id = "AvgCost">Avg. Cost</td>
+      <td id = "AvgCostAmount"></td>
+      <td id = "CurrentPrice">Current Price:</td>
+      <td id = "CurrentPriceAmount"></td>
+    </tr>
+    <tr>
+      <td id = "TotalCost">Total Cost:</td>
+      <td id = "TotalCostAmount"></td>
+      <td id = "MarketValue">Market Value:</td>
+      <td id = "MarketValueAmount"></td>
+    </tr>
+
+  </table>
+  <br>
+ <div class="form">
+  <form onsubmit="buyOrSell(event);">
+    <label for="quantity">Quantity:</label>
+    <input type="text" id="quantity" name="quantity" style="width: 25px;"><br><br>
+    <label for="buy">Buy:</label>
+    <input type="radio" id="buy" name="action" value="buy">
+    <label for="sell">Sell:</label>
+    <input type="radio" id="sell" name="action" value="sell"><br><br>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+</div>
+</body>
+<script>
+if(checkForUsernameCookie()===false){//logged out
+	 document.getElementById('loginText').innerHTML = "Login/Sign Up";
+	 document.getElementById('walletText').innerHTML = "";
+	 document.getElementById('logoutText').innerHTML = "";
+	 
+}
+else{//logged in
+	 document.getElementById('loginText').innerHTML = "Favorites";
+	 document.getElementById('loginText').href = "http://localhost:8081/practice/favorite.html";
+	 document.getElementById('walletText').innerHTML = "Wallet";
+	 document.getElementById('logoutText').innerHTML = "Logout"; 
+}
+
+var wallet = getWallet();
+var cookies = document.cookie.split(";");originalContainer
+console.log(cookies);
+console.log(wallet);
+if(wallet.length === 0){
+	alert("You have nothing in your wallet");
+}
+
+//balance and account value
+var userBalance = getBalance();
+var totalValue = parseFloat(userBalance);
+document.getElementById("cashBalance").innerHTML = "Cash Balance: $" + userBalance;
+for (var i = 0; i < wallet.length; i++) {
+	  var separated = wallet[i].split("@");
+	  var quantity = parseFloat(separated[1]);
+	  var holder = separated[2];
+	  var holderb = holder.split("-");
+	  var price = parseFloat(holderb[0]);
+	  var total = quantity*price;
+	  totalValue = totalValue + total ;
+	  console.log(totalValue);
+}
+document.getElementById("totalValue").innerHTML = "Total Account Value: $" + totalValue;
+
+function updateValues(container){
+	var wallet = getWallet();
+	if(wallet === ""){
+		alert("You have nothing in your wallet");
+	}
+	var userBalance = getBalance();
+	var totalValue = parseFloat(userBalance);
+	document.getElementById("cashBalance").innerHTML = "Cash Balance: $" + userBalance;
+	for (var i = 0; i < wallet.length; i++) {
+		  var separated = wallet[i].split("@");
+		  var quantity = parseFloat(separated[1]);
+		  if(quantity===0){
+			  continue;
+		  }
+		  var holder = separated[2];
+		  var holderb = holder.split("-");
+		  var price = parseFloat(holderb[0]);
+		  var total = quantity*price;
+		  totalValue = totalValue + total ;
+	}
+	document.getElementById("totalValue").innerHTML = "Total Account Value: $" + totalValue;
+	var wallet = getWallet();
+	var thisWallet = wallet[container.querySelector('#Number').innerHTML]
+	var splitWallet = thisWallet.split("@");
+	var range = splitWallet[2];
+
+    var splitRange = range.split("-");
+	var max = parseFloat(splitRange[1]);
+	var min = parseFloat(splitRange[0]);
+	container.querySelector('#CurrentPriceAmount').innerHTML = max.toString();
+	container.querySelector('#TotalCostAmount').innerHTML = (min * parseFloat(splitWallet[1])).toString();
+	var tc = (min * parseFloat(splitWallet[1]));
+	console.log(tc);
+	var avg = tc/(parseFloat(splitWallet[1]));
+	console.log(avg);
+	container.querySelector('#AvgCostAmount').innerHTML = avg.toString();
+	container.querySelector('#MarketValueAmount').innerHTML = (max * parseFloat(splitWallet[1])).toString();
+	container.querySelector('.container #QuantityAmount').innerHTML = parseFloat(splitWallet[1]);
+	if(container.querySelector('.container #QuantityAmount').innerHTML ){
+		if(container.querySelector('.container #QuantityAmount').innerHTML <= 0){
+			container.remove();
+		}
+	}
+	
+}
+//container updating
+var separated = wallet[0].split("@");
+var originalContainer = document.querySelector('.container');
+originalContainer.style.display = "block";
+originalContainer.querySelector('.container #QuantityAmount').innerHTML = separated[1];
+var range = separated[2];
+var splitRange = range.split("-");
+var max = parseFloat(splitRange[1]);
+var min = parseFloat(splitRange[0]);
+var change = max-min;
+originalContainer.querySelector('.container #TotalCostAmount').innerHTML = (min * parseFloat(separated[1])).toString();
+var tc = (min * parseFloat(separated[1]));
+var avg = tc/(parseFloat(separated[1]));
+originalContainer.querySelector('#AvgCostAmount').innerHTML = avg.toString();
+
+originalContainer.querySelector('.container #ChangeAmount').innerHTML = change.toString();
+if(change > 0){
+	originalContainer.querySelector('.container #ChangeAmount').style.color = "green";
+}
+else if (change<0){
+	originalContainer.querySelector('.container #ChangeAmount').style.color = "red";
+
+}
+originalContainer.querySelector('.container #CurrentPriceAmount').innerHTML = max.toString();
+originalContainer.querySelector('.container #MarketValueAmount').innerHTML = (max * parseFloat(separated[1])).toString();
+originalContainer.querySelector('.container #Title').innerHTML = separated[0];
+if(parseFloat(separated[1]) <= 0){
+	originalContainer.remove();
+}
+
+
+var offset = 0;
+for(var i = 1; i < wallet.length; i++){
+	var separated = wallet[i].split("@");
+	var newContainer = originalContainer.cloneNode(true);
+	newContainer.style.marginTop = (offset +=350)+"px";
+	newContainer.style.display = "block";
+	newContainer.querySelector('.container #QuantityAmount').innerHTML = separated[1];
+	if(parseFloat(separated[1])<=0){
+		newContainer.remove();
+		continue;
+	}
+	var range = separated[2];
+	var splitRange = range.split("-");
+	var max = parseFloat(splitRange[1]);
+	var min = parseFloat(splitRange[0]);
+	var change = max-min;
+	newContainer.querySelector('.container #TotalCostAmount').innerHTML = (min * parseFloat(separated[1])).toString();
+	var tc = (min * parseFloat(separated[1]));
+	var avg = tc/(parseFloat(separated[1]));
+	newContainer.querySelector('#AvgCostAmount').innerHTML = avg.toString();
+	
+
+	newContainer.querySelector('.container #ChangeAmount').innerHTML = change.toString();
+	if(change > 0){
+		newContainer.querySelector('.container #ChangeAmount').style.color = "green";
+	}
+	else if(change < 0){
+		newContainer.querySelector('.container #ChangeAmount').style.color = "red";
+
+	}
+	newContainer.querySelector('.container #Number').innerHTML = i;
+	newContainer.querySelector('.container #CurrentPriceAmount').innerHTML = max.toString();
+	newContainer.querySelector('.container #MarketValueAmount').innerHTML = (max * parseFloat(separated[1])).toString();
+	newContainer.querySelector('.container #Title').innerHTML = separated[0];
+
+	document.body.appendChild(newContainer);
+
+}
+
+function  deleteAllUsernameCookies() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var nameHolder = cookie.indexOf("=");
+        var name = nameHolder > -1 ? cookie.substr(0, nameHolder) : cookie;
+        if (name.trim() === "Username") {
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+    }
+    document.getElementById('loginText').innerHTML = "Login/Sign Up";
+    document.getElementById('walletText').innerHTML = "";
+    document.getElementById('logoutText').innerHTML = "";
+}
+
+
+
+
+function getWallet() {
+	  var nameHolder = getUsername();
+	  var wallet = [];
+	  var cookieArr = document.cookie.split(";"); 
+	  for (var i = 0; i < cookieArr.length; i++) {
+	    var cookiePair = cookieArr[i].split("="); 
+	    var key = cookiePair.shift().trim(); // get the first element of the array and remove it
+	    if (key === nameHolder + "Wallet") {
+	      var value = cookiePair.join("=").trim(); // join the remaining elements of the array and remove leading/trailing spaces
+	      if (value !== "") {
+	    	  wallet = JSON.parse(value);
+	      }
+	    }
+	  }
+	  return wallet;
+	}
+
+
+
+function buyOrSell(event){
+	const container = event.target.closest('.container');
+	var userBalance = getBalance();
+	event.preventDefault();
+	var nameHolder = getUsername();
+	var change = container.querySelector('#ChangeAmount').innerHTML;
+	var min = (parseFloat(container.querySelector('#CurrentPriceAmount').innerHTML))-change;
+	if(min<0){
+		alert("FAILED: Purchase is disabled");
+		return;
+	}
+	const quantityAmount = container.querySelector('#QuantityAmount');
+	var buy = container.querySelector('#buy');
+	var sell = container.querySelector('#sell');
+	var quantitySelected = parseFloat(container.querySelector('#quantity').value);
+	if(quantitySelected === ""){
+		alert("Please enter a quantity.");
+		return;
+	}
+	var price = container.querySelector('#CurrentPriceAmount').innerHTML;
+	var change = parseFloat(container.querySelector('#ChangeAmount').innerHTML);
+	if(buy.checked){
+		if(userBalance >= (quantitySelected * min)){
+			var result = quantitySelected + parseFloat(quantityAmount.innerHTML);
+			quantityAmount.innerHTML = result.toString();
+			if(result===0){
+			    updateValues(container);
+				return;
+			}
+			userBalance -= quantitySelected * (parseFloat(container.querySelector('#CurrentPriceAmount').innerHTML) - parseFloat(container.querySelector('#ChangeAmount').innerHTML))
+			document.cookie = nameHolder + "balance=" + userBalance + "; expires=Fri, 31 Dec 9999 23:59:59 GMT"; 
+			 var newWallet = container.querySelector('#Title').innerHTML + "@" + result + "@" + min + " - " + price;
+		     var existingWallet = getWallet();
+		     existingWallet[container.querySelector('#Number').innerHTML] = newWallet;
+		     console.log("a");
+	   	   	 document.cookie = nameHolder + "Wallet=" + JSON.stringify(existingWallet) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+		     updateValues(container);
+	   	   	 alert("Bought " + quantitySelected + " " + container.querySelector('#Title').innerHTML);
+		}
+		else{
+			console.log(min)
+			console.log(userBalance)
+			alert("Transaction Failed, Not enough Cash to purchase");
+		}
+	}	
+	else if(sell.checked){
+		console.log("sell");
+		if(parseFloat(quantityAmount.innerHTML) <= 0){
+			alert("You have no tickets to sell.")
+			return;
+		}
+		var result =  parseFloat(quantityAmount.innerHTML) - quantitySelected;
+		quantityAmount.innerHTML = result.toString();
+		var adder = quantitySelected * (parseFloat(container.querySelector('#CurrentPriceAmount').innerHTML));
+		console.log(adder)
+		var th = parseFloat(userBalance);
+		th += parseFloat(adder);
+		document.cookie = nameHolder + "balance=" + th.toString() + "; expires=Fri, 31 Dec 9999 23:59:59 GMT"; 
+		 var newWallet = container.querySelector('#Title').innerHTML + "@" + result + "@" + min + " - " + price;
+	     var existingWallet = getWallet();
+	     existingWallet[container.querySelector('#Number').innerHTML] = newWallet;
+   	   	 document.cookie = nameHolder + "Wallet=" + JSON.stringify(existingWallet) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT"; 
+	     updateValues(container);
+   	   	 alert("Sold " + quantitySelected + " " + container.querySelector('#Title').innerHTML);
+	}
+	else{
+		alert("Please select Buy or Sell");
+		return;
+	}
+}
+
+  function checkForUsernameCookie() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var nameHolder = cookie.indexOf("=");
+        var name = nameHolder > -1 ? cookie.substr(0, nameHolder) : cookie;
+        if (name.trim() === "Username") {
+            return true;
+        }
+    }
+
+    return false;
+}
+function getBalance(){
+	  var nameHolder = getUsername();
+	  var balance;
+	  var cookies = document.cookie.split(";"); 
+	  for (var i = 0; i < cookies.length; i++) {
+	    var cookiePair = cookies[i].split("="); 
+	    var key = cookiePair[0].trim();
+	    if (key === nameHolder + "balance") {
+	      var value = cookiePair[1].trim();
+	      if (value !== "") {
+	        balance = value; 
+	      }
+	    }
+	  }
+	  return balance;
+	}
+	
+function getUsername(){
+	var cookies = document.cookie.split(";");
+	let substring = '';
+	for (let i = 0; i < cookies.length; i++) {
+		  if (cookies[i].includes('Username')) {
+		    substring = cookies[i].split('=')[1];
+		    break;
+		  }
+		}
+	return substring;
+}
+	
+</script>
+</html>

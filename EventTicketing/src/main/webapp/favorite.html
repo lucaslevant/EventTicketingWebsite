@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<style>
+.task-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #35367b;
+  color: white;
+  height: 50px;
+  padding: 0 20px;
+  gap: 10px; /* added gap property to decrease space */
+  z-index: 1;
+}
+
+.favorites {
+ display: flex;
+  color: black;
+  position: absolute;
+  left: 50%;
+  align-items: left;
+  transform: translate(-50%, 0);
+  display: flex;
+  flex-direction: column;
+}
+.info-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  font-weight: bold;
+  margin-right: 10px;
+  flex-shrink: 0;
+  width: 100px;
+}
+
+.info-value {
+  margin: 0;
+}
+
+
+.container2 {
+	  background-color: gray;
+	  padding: 20px;
+	  border-radius: 5px;
+	  overflow: hidden;
+	  width: 30%;
+	  height: 150%;
+	  margin: 0 auto;
+	  flex-direction: column;
+	  display: none;
+	}
+
+
+.container {
+  width: 1000px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+ .row {
+    justify-content: space-between;
+    display: flex;
+  }
+  .button2 {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+  
+  
+.quantity-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.quantity-label {
+  font-weight: bold;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+  
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align:center;
+}
+
+.purchase-section {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+input[type=number] {
+  width: 215px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid gray;
+line-height: 25px;
+}
+
+
+</style>
+
+<div class="task-bar">
+  <div class="menu">SalTickets</div>
+  <div class="loginLink">
+    <a style="color: white" href="http://localhost:8081/practice/index.html">Home</a>
+    <a style="color: white" href="http://localhost:8081/practice/favorite.html" id="loginText">Login/Sign Up</a>
+    <a style="color: white" href="http://localhost:8081/practice/wallet.html" id="walletText">Wallet</a>
+    <a style="color: white" href="http://localhost:8081/practice/index.html" id="logoutText" onclick="deleteAllCookies()">Logout</a>
+  </div>
+</div>
+<div style="text-align:center;"><b>My favorites</b></div>
+<div id = "container1"></div>
+<div id="gray-box" class="container2">
+  <div class="title" id="EventTitle" style = "color:white"></div>
+  <div class="info-section">
+    <div class="info-label" style="color:lightblue">Date</div>
+    <div>
+    </div>
+  <div class="quantity-section">
+      <div class="quantity-label" id="Selector" style = "color:lightblue">Quantity of tickets to purchase</div>
+      <input type="number" class="quantity-selec" id = "quantity-selector">
+    </div>
+  </div>
+      <div class="info-value" style = "margin-top:-35px;color:white;"id="Date"></div><br>
+      <div class="purchase-section">
+    <button class="button2"style = "margin-left:400px;" id="PurchaseButton">Purchase</button>
+  </div>	
+  <div class="info-section">
+    <div class="info-label" style="color:lightblue;margin-top:-60px">Venue</div>
+</div>
+    <div class="info-value" id="Venue" style = "color:white;margin-top:-40px"></div><br>
+  <div class="info-section">
+    <div class="info-label" style="color:lightblue;margin-top:0px">Price Range</div>
+  </div>
+      <div class="info-value" id="PriceRange" style = "color:white;margin-top:0px" ></div><br>
+  <div class="info-section">
+    <div class="info-label" style="color:lightblue;margin-bottom:50px">More Info</div>
+  </div>
+      <div  style = "margin-top:-55px"><a href = "" id = "Ticketmaster" style = "color:cyan;">Ticketmaster</a></div>
+  <div id = "Event-Id" style = "Display: none"></div>
+  <div id = "LocalTime" style = "Display: none"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+var cookies = document.cookie.split(";");
+console.log(cookies);
+	var favorites = getFavorites();
+	console.log(favorites)
+	if(favorites.length === 0){
+		alert("You have no favorites!");
+	}
+  displayFavorites();
+  
+  if(checkForUsernameCookie()===false){//logged out
+		 document.getElementById('loginText').innerHTML = "Login/Sign Up";
+		 document.getElementById('walletText').innerHTML = "";
+		 document.getElementById('logoutText').innerHTML = "";
+		 
+	}
+	else{//logged in
+		 document.getElementById('loginText').innerHTML = "Favorites";
+		 document.getElementById('loginText').href = "http://localhost:8081/practice/favorite.html";
+		 document.getElementById('walletText').innerHTML = "Wallet";
+		 document.getElementById('logoutText').innerHTML = "Logout"; 
+	}
+  
+  function removeFromFavorites(eventId){
+	    var nameHolder = getUsername();
+	  	var existingFavorites = getFavorites(); 
+	  	var index = existingFavorites.indexOf(eventId);
+	  	existingFavorites.splice(index, 1); 
+	  	document.cookie = nameHolder + "favoriteItems=" + JSON.stringify(existingFavorites) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT"; 
+	}
+
+  function getFavorites() {
+	  var nameHolder = getUsername();
+	  var favoriteItems = [];
+	  var cookieArr = document.cookie.split(";"); 
+	  for (var i = 0; i < cookieArr.length; i++) {
+	    var cookiePair = cookieArr[i].split("="); 
+	    var key = cookiePair.shift().trim(); // get the first element of the array and remove it
+	    if (key === nameHolder + "favoriteItems") {
+	      var value = cookiePair.join("=").trim(); // join the remaining elements of the array and remove leading/trailing spaces
+	      if (value !== "") {
+	        favoriteItems = JSON.parse(value);
+	      }
+	    }
+	  }
+	  console.log(favoriteItems);
+	  return favoriteItems;
+	}
+
+  
+  function checkForUsernameCookie() {
+	    var cookies = document.cookie.split(";");
+
+	    for (var i = 0; i < cookies.length; i++) {
+	        var cookie = cookies[i];
+	        var eqPos = cookie.indexOf("=");
+	        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+
+	        // Check if the cookie has the key "username"
+	        if (name.trim() === "Username") {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+
+  function deleteAllCookies() {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      var eqPos = cookie.indexOf("=");
+      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    document.getElementById('loginText').innerHTML = "Login/Sign Up";
+    document.getElementById('walletText').innerHTML = "";
+    document.getElementById('logoutText').innerHTML = "";
+  }
+  
+
+  function getBalance(){
+  	  var nameHolder = getUsername();
+  	  var balance;
+  	  var cookies = document.cookie.split(";"); 
+  	  for (var i = 0; i < cookies.length; i++) {
+  	    var cookiePair = cookies[i].split("="); 
+  	    var key = cookiePair[0].trim();
+  	    if (key === nameHolder + "balance") {
+  	      var value = cookiePair[1].trim();
+  	      if (value !== "") {
+  	        balance = value; 
+  	      }
+  	    }
+  	  }
+  	  return balance;
+  	}
+
+  
+ 
+
+  function getWallet() {
+  	  var nameHolder = getUsername();
+  	  var wallet = [];
+  	  var cookieArr = document.cookie.split(";");
+  	  for (var i = 0; i < cookieArr.length; i++) {
+  	    var cookiePair = cookieArr[i].split("="); 
+  	    var key = cookiePair[0].trim();
+  	    if (key === nameHolder + "Wallet") {
+  	      var value = cookiePair[1].trim();
+  	      if (value !== "") {
+  	    	  wallet = JSON.parse(value); 
+  	      }
+  	    }
+  	  }
+  	  return wallet;
+  	}
+  function displayFavorites() {
+	var cookies = document.cookie.split(";");
+    var username = getUsername(cookies);
+    var key = username + "favoriteItems"; 
+    var favorites = getFavorites();
+    var favoritesDiv = document.querySelector(".favorites"); 
+    for (var i = 0; i < favorites.length; i++) {
+    	  var separated = favorites[i].split("@");
+    	  var container = document.createElement("div");
+    	  container.classList.add("container");
+    	  var row1 = document.createElement("div");
+    	  row1.classList.add("row");
+    	  var name = document.createElement("p");
+    	  name.textContent = separated[0];
+    	  name.id = "EventTitleB";
+    	  row1.appendChild(name);
+    	  var x = document.createElement("button");
+    	  x.textContent = "x";
+    	  x.id = "x";
+    	  var eventId = document.createElement("p");
+    	  eventId.id = "Event-IdB";
+    	  eventId.textContent= separated[4];
+    	  eventId.style.display = "none";
+    	  row1.appendChild(eventId);
+    	  x.addEventListener("click", (event) =>{
+ 			var holder = document.getElementById('Event-Id');
+ 			var eventId = holder.innerHTML;
+ 			alert("Removed " + document.getElementById('EventTitleB').innerHTML);
+			removeFromFavorites(eventId);
+  		  event.stopPropagation();
+  		var container = event.target.parentNode.parentNode;
+  	    container.remove();
+    	  })
+    	  row1.appendChild(x);
+    	  container.appendChild(row1);
+    	  var row2 = document.createElement("div");
+    	  row2.classList.add("row");
+    	  var date = document.createElement("p");
+    	  date.textContent = separated[1];
+    	  var time= document.createElement("p");
+    	  time.id = "LocalTimeB";
+    	  time.textContent = separated[2];
+    	  var dateAndTime= document.createElement("p");
+    	  dateAndTime.textContent = separated[1] + " " + separated[2];
+    	  row2.appendChild(dateAndTime);
+    	  dateAndTime.id = 'DateB';
+    	  var range = document.createElement("p");
+    	  range.id = "PriceRangeB";
+    	  range.textContent = separated[3];
+    	  row2.appendChild(range);
+    	  var tempo = (range.textContent).split("-");
+    	  var min = document.createElement("p");
+    	  min.textContent = tempo[0];
+    	  min.style.display = "none";
+    	  min.id = "MinB";
+    	  row2.append(min);
+    	  var venue = document.createElement("p");
+    	  venue.textContent = separated[4];
+    	  venue.id = "VenueB";
+    	  var url = document.createElement("p");
+    	  url.textContent = separated[5];
+    	  url.id = "UrlB";
+    	  console.log(separated[5]);
+    	  url.style.display = "none";
+    	  venue.style.display = "none";
+    	  row2.appendChild(venue);
+    	  row2.appendChild(url);
+    	  var name = document.createElement("p");
+    	  name.textContent = separated[0];
+    	  name.id = "EventTitleB";
+    	  container.appendChild(row2);
+    	  document.body.appendChild(container);
+    	  container.addEventListener('click', (event) => {
+    		  event.stopPropagation();
+			    const containerPicked = event.target.parentNode;
+			    var container2 = document.getElementById("gray-box");
+			    container2.style.display = "flex";
+			    document.getElementById('EventTitle').innerHTML = containerPicked.querySelector('#EventTitleB').innerHTML;
+			    var dateAndTime = containerPicked.querySelector('#DateB').innerHTML.split(" ");
+			    document.getElementById('Date').innerHTML = dateAndTime[0];
+				document.getElementById('PriceRange').innerHTML = containerPicked.querySelector('#PriceRangeB').innerHTML;
+				console.log(containerPicked.querySelector('#UrlB').innerHTML);
+				document.getElementById('Ticketmaster').href = containerPicked.querySelector('#UrlB').innerHTML;
+				document.getElementById('Venue').innerHTML = containerPicked.querySelector('#VenueB').innerHTML;
+				document.getElementById('Event-Id').innerHTML = containerPicked.querySelector('#Event-IdB').innerHTML;
+				if(dateAndTime[1] != null){
+					document.getElementById('LocalTime').innerHTML = dateAndTime[1];
+				} 
+				PurchaseButton.addEventListener('click', (event) => {
+					event.preventDefault();
+					var quantity = document.getElementById('quantity-selector').value;
+					var eventId = document.getElementById('Event-Id').innerHTML;
+					var min = containerPicked.querySelector('#MinB').innerHTML;
+					if(containerPicked.querySelector('#PriceRangeB').innerHTML === "N/A"){
+						alert("FAILED: Purchase is disabled");
+					}
+					else if(quantity ==="" ){
+						alert("FAILED: Purchase not possible");
+					}
+					else{
+						var success = addToWallet(quantity,min);
+						if(!success){
+							alert("FAILED: Insufficient funds");
+						}
+					}
+				})
+		    	document.body.appendChild(container2);
+    	  })
+    	}
+  }
+  function getUsername(){
+		var cookies = document.cookie.split(";");
+		let substring = '';
+		for (let i = 0; i < cookies.length; i++) {
+			  if (cookies[i].includes('Username')) {
+			    substring = cookies[i].split('=')[1];
+			    break;
+			  }
+			}
+		return substring;
+	}
+  
+  function addToWallet(quantity, min){
+	    var purchases = $("#EventTitle").text() + "@" + quantity + "@" + $("#PriceRangeB").text();
+	     var nameHolder = getUsername();
+	   	 var existingWallet = getWallet(); 
+	   	 existingWallet.push(purchases);
+	   	 var balance = getBalance();
+	   	 balance -= (min*quantity);
+	   	 if(balance>=0){
+	   	   	 document.cookie = nameHolder + "Wallet=" + JSON.stringify(existingWallet) + "; expires=Fri, 31 Dec 9999 23:59:59 GMT"; 
+	   	   	 return true;
+	   	 }
+	   	 else return false;
+	}	
+
+	
+	function getCookies(cookieStrings) {
+		  var cookies = {};
+		  for (var i = 0; i < cookieStrings.length; i++) {
+		    var cookiePair = cookieStrings[i].split("=");
+		    var key = cookiePair[0].trim();
+		    var value = cookiePair[1].trim();
+		    if (value.startsWith("[") && value.endsWith("]")) {
+		      try {
+		        value = JSON.parse(value);
+		      } catch (e) {
+		      }
+		    }
+		    cookies[key] = value;
+		  }
+		  return cookies;
+		}
+	
+	function getCookieValue(cookieStrings, key) {
+		  var cookies = getCookies(cookieStrings);
+		  if (key in cookies) {
+		    return cookies[key];
+		  } else {
+		    return null;
+		  }
+		}
+	</script>
+</html>

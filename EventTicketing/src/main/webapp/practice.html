@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Practice</title>
+</head>
+<body>
+<button id = "button">Get Text File</button>
+<div id = 'text'></div>
+<script>
+document.getElementById('button').addEventListener('click', loadText);
+function loadText(){
+	console.log("clicked");
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'sample.txt', true);
+	/* console.log("hey ", xhr.readyState);
+	xhr.onreadystatechange = function(){
+		if(this.readyState == 4 && this.status == 200){
+			console.log("entered");
+		}
+	} */	
+	/* xhr.onload = function(){
+		console.log("hey", xhr.readyState);
+		if(this.status == 200){
+			document.getElementById('text').innerHTML = this.responseText;
+			console.log("entered");
+		}
+	} 
+	xhr.send(); */
+} 
+</script>
+</body>
+</html>

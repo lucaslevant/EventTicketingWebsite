@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<style>
+.container2 {
+  background-color: gray;
+  padding: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 70%;
+  height: 150%;
+  margin: 0 auto;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align:center;
+}
+
+.info-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  font-weight: bold;
+  margin-right: 10px;
+  flex-shrink: 0;
+  width: 100px;
+}
+
+.info-value {
+  margin: 0;
+}
+
+.purchase-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.button2 {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-bottom: 0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+input[type=number] {
+  width: 215px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid gray;
+}
+
+.quantity-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.quantity-label {
+  font-weight: bold;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+
+</style>
+<body>
+<div class="container2">
+  <div class="title">Event Title</div>
+  <div class="info-section">
+    <div class="info-label" style = "color:blue">Date:</div>
+    <div class="info-value">May 1, 2023</div>
+    <div class="quantity-section">
+      <div class="quantity-label">Quantity of tickets to purchase:</div>
+      <input type="number" class="quantity-selector" value="1">
+    </div>
+  </div>
+  <div class="info-section">
+    <div class="info-label" style = "color:blue">Venue:</div>
+    <div class="info-value">Example Venue</div>
+  </div>
+  <div class="info-section">
+    <div class="info-label" style = "color:blue">Price Range:</div>
+    <div class="info-value">$50 - $100</div>
+  </div>
+  <div class="info-section">
+    <div class="info-label" style = "color:blue">More Info:</div>
+    <div class="info-value">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+  </div>
+  <div class="purchase-section">
+    <button class="button2">Purchase</button>
+  </div>
+</div>
+
+
+</body>
+</html>
